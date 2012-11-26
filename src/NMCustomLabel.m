@@ -371,7 +371,7 @@ static NSCharacterSet *alphaNumericCharacterSet;
 					NSDictionary *attributes;
 					if(linkColor){
 						UIColor *tehLinkColor = linkColor;
-						if(highlightedTextIndex != NSNotFound){
+						if(!FloatIsEqual(highlightedTextIndex, NSNotFound)){
 							if(highlightedTextIndex >= range.location && highlightedTextIndex < range.location+range.length){
 								highlightedTextType = kNMTextTypeUsername;
 								tehLinkColor = activeLinkColor;
@@ -398,7 +398,7 @@ static NSCharacterSet *alphaNumericCharacterSet;
 			NSDictionary *attributes;
 			if(linkColor){
 				UIColor *tehLinkColor = linkColor;
-				if(highlightedTextIndex != NSNotFound){
+				if(!FloatIsEqual(highlightedTextIndex, NSNotFound)){
 					if(highlightedTextIndex >= matchRange.location && highlightedTextIndex < matchRange.location+matchRange.length){
 						highlightedTextType = kNMTextTypeLink;
 						tehLinkColor = activeLinkColor;
@@ -711,7 +711,7 @@ static NSCharacterSet *alphaNumericCharacterSet;
 	}
 }
 -(BOOL)hasHighlightedText{
-	return highlightedTextIndex != NSNotFound;
+  return !FloatIsEqual(highlightedTextIndex, NSNotFound);
 }
 -(void)resetHighlightedText{
 	highlightedTextIndex = NSNotFound;
@@ -739,7 +739,7 @@ static NSCharacterSet *alphaNumericCharacterSet;
 	switch (recog.state) {
 		case UIGestureRecognizerStateBegan:
 			recogOutOfBounds = NO; //reset.
-			if(highlightedTextIndex == NSNotFound){
+			if(FloatIsEqual(highlightedTextIndex, NSNotFound)){
 				highlightedTextIndex = [self stringIndexAtLocation:location];
 				[self createAttributedString];
 			}
