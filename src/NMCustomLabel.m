@@ -571,9 +571,9 @@ static NSCharacterSet *alphaNumericCharacterSet;
 		// truncate the last line before drawing it 
 		CGPoint lastOrigin = origins[count-1]; 
 		CTLineRef lastLine = CFArrayGetValueAtIndex(lines, count-1); 
-		// truncation token is a CTLineRef itself 
-		CFDictionaryRef stringAttrs = nil;
-		CFAttributedStringRef truncationString = CFAttributedStringCreate(NULL, CFSTR("\u2026"), stringAttrs); 
+		// truncation token is a CTLineRef itself
+                NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:(__bridge id)[[self defaultStyle] fontRef], kCTFontAttributeName, (__bridge id)[[self defaultStyle] colorRef], kCTForegroundColorAttributeName, nil];
+		CFAttributedStringRef truncationString = CFAttributedStringCreate(NULL, CFSTR("\u2026"), (__bridge CFDictionaryRef)attributes);
 		CTLineRef truncationToken = CTLineCreateWithAttributedString(truncationString); 
 		CFRelease(truncationString); 
 		// now create the truncated line -- need to grab extra characters from the source string, 
