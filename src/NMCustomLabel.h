@@ -80,6 +80,7 @@ typedef enum{
 @property (nonatomic, weak) id<NMCustomLabelDelegate> delegate;
 
 -(BOOL)hasHighlightedText;
+-(void)setDefaults;
 +(NSRegularExpression *)usernameRegEx;
 +(NSRegularExpression *)hashtagRegEx;
 

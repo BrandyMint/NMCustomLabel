@@ -105,8 +105,11 @@ static NSCharacterSet *alphaNumericCharacterSet;
 	self.userInteractionEnabled = YES;
 }
 -(void)setDefaults{
-	self.backgroundColor = [UIColor whiteColor];		
-	[self setDefaultStyle:[NMCustomLabelStyle new]];
+    self.text = self.text;
+	self.backgroundColor = self.backgroundColor;
+    self.textAlignment = [super textAlignment];
+    
+	[self setDefaultStyle:[NMCustomLabelStyle styleWithFont:[UIFont fontWithName:self.font.fontName size:self.font.pointSize] color:self.textColor]];
 	
 	highlightedTextIndex = NSNotFound;
 }
@@ -156,6 +159,12 @@ static NSCharacterSet *alphaNumericCharacterSet;
 			break;
 	}
 }
+-(id)initWithCoder:(NSCoder *)aDecoder{
+	if(self = [super initWithCoder:aDecoder]){
+		[self setDefaults];
+	}
+	return self;
+}
 -(id)initWithFrame:(CGRect)frame{
 	if(self = [super initWithFrame:frame]){
 		[self setDefaults];
@@ -195,10 +204,6 @@ static NSCharacterSet *alphaNumericCharacterSet;
 	}
 }
 -(void)setText:(NSString *)_text{
-	if([self.text isEqualToString:_text]){
-		return;
-	}
-	
 	[super setText:_text];
 	
 	if(self.text && self.text.length > 0){
