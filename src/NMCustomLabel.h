@@ -86,6 +86,7 @@ typedef enum{
 
 -(void)setDefaultStyle:(NMCustomLabelStyle *)style;
 -(void)setStyle:(NMCustomLabelStyle *)style forKey:(NSString *)key;
+-(NMCustomLabelStyle *)getDefaultStyle;
 
 
 @end

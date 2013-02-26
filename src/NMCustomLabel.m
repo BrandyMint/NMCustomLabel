@@ -244,6 +244,9 @@ static NSCharacterSet *alphaNumericCharacterSet;
 -(void)setStyle:(NMCustomLabelStyle *)style forKey:(NSString *)key{
 	[self.styles setObject:style forKey:[key lowercaseString]];
 }
+-(NMCustomLabelStyle *)getDefaultStyle{
+    return [self.styles objectForKey:NMCustomLabelStyleDefaultKey];
+}
 -(void)setDefaultStyle:(NMCustomLabelStyle *)style{
 	[self setStyle:style forKey:NMCustomLabelStyleDefaultKey];
 }
