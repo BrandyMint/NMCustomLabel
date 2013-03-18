@@ -379,7 +379,7 @@ static NSCharacterSet *alphaNumericCharacterSet;
 					NSDictionary *attributes;
 					if(linkColor){
 						UIColor *tehLinkColor = linkColor;
-						if(highlightedTextIndex != NSNotFound){
+						if(!FloatIsEqual(highlightedTextIndex, NSNotFound)){
 							if(highlightedTextIndex >= range.location && highlightedTextIndex < range.location+range.length){
 								highlightedTextType = kNMTextTypeUsername;
 								tehLinkColor = activeLinkColor;
@@ -406,7 +406,7 @@ static NSCharacterSet *alphaNumericCharacterSet;
 			NSDictionary *attributes;
 			if(linkColor){
 				UIColor *tehLinkColor = linkColor;
-				if(highlightedTextIndex != NSNotFound){
+				if(!FloatIsEqual(highlightedTextIndex, NSNotFound)){
 					if(highlightedTextIndex >= matchRange.location && highlightedTextIndex < matchRange.location+matchRange.length){
 						highlightedTextType = kNMTextTypeLink;
 						tehLinkColor = activeLinkColor;
@@ -579,9 +579,9 @@ static NSCharacterSet *alphaNumericCharacterSet;
 		// truncate the last line before drawing it 
 		CGPoint lastOrigin = origins[count-1]; 
 		CTLineRef lastLine = CFArrayGetValueAtIndex(lines, count-1); 
-		// truncation token is a CTLineRef itself 
-		CFDictionaryRef stringAttrs = nil;
-		CFAttributedStringRef truncationString = CFAttributedStringCreate(NULL, CFSTR("\u2026"), stringAttrs); 
+		// truncation token is a CTLineRef itself
+                NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:(__bridge id)[[self defaultStyle] fontRef], kCTFontAttributeName, (__bridge id)[[self defaultStyle] colorRef], kCTForegroundColorAttributeName, nil];
+		CFAttributedStringRef truncationString = CFAttributedStringCreate(NULL, CFSTR("\u2026"), (__bridge CFDictionaryRef)attributes);
 		CTLineRef truncationToken = CTLineCreateWithAttributedString(truncationString); 
 		CFRelease(truncationString); 
 		// now create the truncated line -- need to grab extra characters from the source string, 
@@ -714,12 +714,13 @@ static NSCharacterSet *alphaNumericCharacterSet;
 	return -1;
 }
 -(void)performActionOnHighlightedText{
-	if([self.delegate respondsToSelector:@selector(customLabel:didSelectText:type:)]){
-		[self.delegate customLabel:self didSelectText:highlightedText type:highlightedTextType];
+        id<NMCustomLabelDelegate> strongDelegate = self.delegate;
+	if([strongDelegate respondsToSelector:@selector(customLabel:didSelectText:type:)]){
+		[strongDelegate customLabel:self didSelectText:highlightedText type:highlightedTextType];
 	}
 }
 -(BOOL)hasHighlightedText{
-	return highlightedTextIndex != NSNotFound;
+  return !FloatIsEqual(highlightedTextIndex, NSNotFound);
 }
 -(void)resetHighlightedText{
 	highlightedTextIndex = NSNotFound;
@@ -743,36 +744,38 @@ static NSCharacterSet *alphaNumericCharacterSet;
 	if(!CGRectContainsPoint(self.bounds, location)){
 		recogOutOfBounds = YES;
 	}
+  
+        id<NMCustomLabelDelegate> strongDelegate = self.delegate;
 
 	switch (recog.state) {
 		case UIGestureRecognizerStateBegan:
 			recogOutOfBounds = NO; //reset.
-			if(highlightedTextIndex == NSNotFound){
+			if(FloatIsEqual(highlightedTextIndex, NSNotFound)){
 				highlightedTextIndex = [self stringIndexAtLocation:location];
 				[self createAttributedString];
 			}
 			if(highlightedText){
-				if([self.delegate respondsToSelector:@selector(customLabelDidBeginTouch:recog:)]){
-					[self.delegate customLabelDidBeginTouch:self recog:recog];
+				if([strongDelegate respondsToSelector:@selector(customLabelDidBeginTouch:recog:)]){
+					[strongDelegate customLabelDidBeginTouch:self recog:recog];
 				}
 			}else{
-				if([self.delegate respondsToSelector:@selector(customLabelDidBeginTouchOutsideOfHighlightedText:recog:)]){
-					[self.delegate customLabelDidBeginTouchOutsideOfHighlightedText:self recog:recog];
+				if([strongDelegate respondsToSelector:@selector(customLabelDidBeginTouchOutsideOfHighlightedText:recog:)]){
+					[strongDelegate customLabelDidBeginTouchOutsideOfHighlightedText:self recog:recog];
 				}
 			}
 			[self setNeedsDisplay];
 			break;
 		
 		case UIGestureRecognizerStateChanged:
-			if([self.delegate respondsToSelector:@selector(customLabel:didChange:)]){
-				[self.delegate customLabel:self didChange:recog];
+			if([strongDelegate respondsToSelector:@selector(customLabel:didChange:)]){
+				[strongDelegate customLabel:self didChange:recog];
 			}
 			if(recogOutOfBounds){
 //				recog.enabled = NO;
 //				recog.enabled = YES;
 				[self resetHighlightedText];
-				if([self.delegate respondsToSelector:@selector(customLabelDidEndTouchOutsideOfHighlightedText:recog:)]){
-					[self.delegate customLabelDidEndTouchOutsideOfHighlightedText:self recog:recog];
+				if([strongDelegate respondsToSelector:@selector(customLabelDidEndTouchOutsideOfHighlightedText:recog:)]){
+					[strongDelegate customLabelDidEndTouchOutsideOfHighlightedText:self recog:recog];
 				}
 			}
 			break;
@@ -785,12 +788,12 @@ static NSCharacterSet *alphaNumericCharacterSet;
 		case UIGestureRecognizerStateCancelled:
 		case UIGestureRecognizerStateFailed:
 			if(highlightedText && !recogOutOfBounds){
-				if([self.delegate respondsToSelector:@selector(customLabelDidEndTouch:recog:)]){
-					[self.delegate customLabelDidEndTouch:self recog:recog];
+				if([strongDelegate respondsToSelector:@selector(customLabelDidEndTouch:recog:)]){
+					[strongDelegate customLabelDidEndTouch:self recog:recog];
 				}
 			}else{
-				if([self.delegate respondsToSelector:@selector(customLabelDidEndTouchOutsideOfHighlightedText:recog:)]){
-					[self.delegate customLabelDidEndTouchOutsideOfHighlightedText:self recog:recog];
+				if([strongDelegate respondsToSelector:@selector(customLabelDidEndTouchOutsideOfHighlightedText:recog:)]){
+					[strongDelegate customLabelDidEndTouchOutsideOfHighlightedText:self recog:recog];
 				}
 			}
 			[self resetHighlightedText];

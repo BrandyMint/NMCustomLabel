@@ -84,7 +84,7 @@ NSString * const NMCustomLabelStyleBoldKey = @"nm-bold-style";
 		if(!fontName){
 			fontName = @"Helvetica";
 		}
-		if (fontSize == 0) {
+		if (FloatIsEqual(fontSize, 0)) {
 			fontSize = 12;
 		}
 		fontRef = CTFontCreateWithName((__bridge CFStringRef)fontName, fontSize, NULL);
